@@ -69,7 +69,8 @@ if (!$result_programa) {
                     </div>
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre del módulo:</label>
-                        <input type="text" name="nombre" id="nombre" class="form-control" maxlength="50" placeholder="Nombre del módulo" required>
+                        <input type="text" name="nombre" id="nombre" class="form-control" maxlength="150" placeholder="Nombre del módulo" required>
+                        <small id="contadorNombreCrear" class="contador-texto">150 caracteres disponibles</small>
                     </div>
                     <label for="programa">Selecciona un programa</label>
                     <select name="id_programa"  id="id_programa" class="form-control" required>
@@ -86,8 +87,8 @@ if (!$result_programa) {
                     </select>
                     <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripción:</label>
-                        <textarea name="descripcion" id="descripcion" maxlength="30" class="form-control" placeholder="Máximo 30 caracteres"></textarea>
-                        <small id="contadorCrear" class="contador-texto">30 caracteres disponibles</small>
+                        <textarea name="descripcion" id="descripcion" maxlength="150" class="form-control" placeholder="Máximo 150 caracteres"></textarea>
+                        <small id="contadorDescripcionCrear" class="contador-texto">150 caracteres disponibles</small>
                     </div>
                 </form>
             </div>
@@ -121,7 +122,8 @@ if (!$result_programa) {
                     </div>
                     <div class="mb-3">
                         <label for="nombre_edit" class="form-label">Nombre del módulo:</label>
-                        <input type="text" name="nombre" id="nombre_edit" class="form-control" maxlength="50" placeholder="Nombre del módulo" required>
+                        <input type="text" name="nombre" id="nombre_edit" class="form-control" maxlength="150" placeholder="Nombre del módulo" required>
+                        <small id="contadorNombreEditar" class="contador-texto">150 caracteres disponibles</small>
                     </div>
                     <div class="form-group">
                     <label for="programa">Selecciona un programa</label>
@@ -140,11 +142,11 @@ if (!$result_programa) {
                             }
                         ?>
                     </select>
-                    <div class="mb-3">
-                        <label for="descripcion_edit" class="form-label">Descripción:</label>
-                        <textarea name="descripcion" id="descripcion_edit" maxlength="30" class="form-control" placeholder="Máximo 30 caracteres"></textarea>
-                        <small id="contadorEditar" class="contador-texto">30 caracteres disponibles</small>
-                    </div>
+                <div class="mb-3">
+                    <label for="descripcion_edit" class="form-label">Descripción:</label>
+                    <textarea name="descripcion" id="descripcion_edit" maxlength="150" class="form-control" placeholder="Máximo 150 caracteres"></textarea>
+                    <small id="contadorDescripcionEditar" class="contador-texto">150 caracteres disponibles</small>
+                </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary" onclick="guardarModulo()">Guardar Cambios</button>
