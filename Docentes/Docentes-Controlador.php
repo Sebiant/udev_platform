@@ -118,6 +118,38 @@ switch ($accion) {
         }
     
         break;
+
+    case 'resetPassword':
+        if (isset($_POST['numero_documento'])) {
+            $numero_documento = $_POST['numero_documento'];
+
+            // La nueva contraseña será el número de documento (encriptada con password_hash)
+            $nuevaClave = password_hash($numero_documento, PASSWORD_DEFAULT);
+
+            $sql = "UPDATE usuarios SET clave = ? WHERE numero_documento = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ss", $nuevaClave, $numero_documento);
+
+            if ($stmt->execute()) {
+                echo json_encode([
+                    "success" => true,
+                    "message" => "Contraseña restablecida al número de documento correctamente."
+                ]);
+            } else {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Error al restablecer la contraseña."
+                ]);
+            }
+
+            $stmt->close();
+        } else {
+            echo json_encode([
+                "success" => false,
+                "message" => "No se recibió el número de documento."
+            ]);
+        }
+        break;
     
     case 'traerMaterias':
         $sql_materias = "SELECT id_modulo, nombre FROM modulos";

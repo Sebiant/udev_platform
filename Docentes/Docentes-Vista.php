@@ -32,6 +32,7 @@ include_once '../Componentes/header.php';
                         <th>Email</th>
                         <th>Estado</th>
                         <th>Modificar</th>
+                        <th>Recuperar Contraseña</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
