@@ -417,12 +417,19 @@ $result_programas = $conn->query($sql_programas);
                         <select id="id_salon" name="id_salon" class="form-control">
                             <option value="">-- Selecciona un salón --</option>
                             <?php
-                            $sql_salones = "SELECT id_salon, nombre_salon FROM salones";
+                            $sql_salones = "
+                                SELECT s.id_salon, s.nombre_salon, i.nombre AS nombre_institucion
+                                FROM salones s
+                                INNER JOIN instituciones i ON s.id_institucion = i.id_institucion
+                                ORDER BY i.nombre, s.nombre_salon
+                            ";
                             $result_salones = $conn->query($sql_salones);
 
                             if ($result_salones->num_rows > 0) {
                                 while ($row_salon = $result_salones->fetch_assoc()) {
-                                    echo '<option value="' . $row_salon['id_salon'] . '">' . $row_salon['nombre_salon'] . '</option>';
+                                    echo '<option value="' . $row_salon['id_salon'] . '">'
+                                        . $row_salon['nombre_salon'] . ' - ' . $row_salon['nombre_institucion'] 
+                                        . '</option>';
                                 }
                             } else {
                                 echo '<option value="">No hay salones disponibles</option>';
