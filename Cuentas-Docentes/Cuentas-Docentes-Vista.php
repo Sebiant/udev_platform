@@ -238,8 +238,8 @@
           console.log("Respuesta del servidor:", data);
           if (data.success) {
             alert("✅ " + data.message);
-            //$("#modalCambiarPassword").modal("hide");
-            //$("#formCambiarPassword")[0].reset();
+            $("#modalCambiarPassword").modal("hide");
+            $("#formCambiarPassword")[0].reset();
           } else {
             alert("⚠️ " + data.message);
           }
