@@ -109,6 +109,107 @@ switch ($accion) {
         $stmt_update->close();
         break;
 
+    case 'cambiarPassword':
+        // Fuerza a que PHP mande logs a un archivo tuyo
+        ini_set("log_errors", 1);
+        ini_set("error_log", __DIR__ . "/debug_password.log"); // archivo en la misma carpeta del script
+
+        error_log("=== INICIO CAMBIO PASSWORD ===");
+
+        $old_password = $_POST['old_password'] ?? '';
+        $new_password = $_POST['new_password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
+
+        error_log("Old: $old_password | New: $new_password | Confirm: $confirm_password");
+
+        if (empty($old_password) || empty($new_password) || empty($confirm_password)) {
+            error_log("Fallo: campos vacíos");
+            echo json_encode(["success" => false, "message" => "Todos los campos son obligatorios"]);
+            break;
+        }
+
+        if ($new_password !== $confirm_password) {
+            error_log("Fallo: las contraseñas nuevas no coinciden");
+            echo json_encode(["success" => false, "message" => "Las contraseñas nuevas no coinciden"]);
+            break;
+        }
+
+        // Buscar el usuario relacionado al docente
+        $sql_user = "SELECT id, clave FROM usuarios WHERE numero_documento = ? LIMIT 1";
+        $stmt_user = $conn->prepare($sql_user);
+        if (!$stmt_user) {
+            error_log("Error preparando consulta usuario: " . $conn->error);
+            echo json_encode(["success" => false, "message" => "Error en la preparación: " . $conn->error]);
+            break;
+        }
+
+        error_log("Buscando usuario con documento: $docente");
+        $stmt_user->bind_param("s", $docente);
+        $stmt_user->execute();
+        $result_user = $stmt_user->get_result();
+
+        if (!$result_user || $result_user->num_rows === 0) {
+            error_log("Fallo: usuario no encontrado ($docente)");
+            echo json_encode(["success" => false, "message" => "Usuario asociado no encontrado"]);
+            $stmt_user->close();
+            break;
+        }
+
+        $user = $result_user->fetch_assoc();
+        $stored = $user['clave'];
+        error_log("Usuario encontrado ID=" . $user['id'] . " | Clave en DB=" . $stored);
+
+        if (is_null($stored) || $stored === '') {
+            error_log("Fallo: usuario sin clave previa");
+            echo json_encode(["success" => false, "message" => "No hay contraseña establecida. Usa 'Olvidé mi contraseña' para restablecerla."]);
+            $stmt_user->close();
+            break;
+        }
+
+        $is_hashed = (strpos($stored, '$2y$') === 0 || strpos($stored, '$2a$') === 0 || strpos($stored, '$2b$') === 0);
+        $valid_old = false;
+
+        if ($is_hashed) {
+            $valid_old = password_verify($old_password, $stored);
+            error_log("Password en DB está hasheado. ¿Coincide old? " . ($valid_old ? "SI" : "NO"));
+        } else {
+            $valid_old = ($old_password === $stored);
+            error_log("Password en DB es plano. ¿Coincide old? " . ($valid_old ? "SI" : "NO"));
+        }
+
+        if (!$valid_old) {
+            error_log("Fallo: contraseña actual incorrecta");
+            echo json_encode(["success" => false, "message" => "La contraseña actual es incorrecta"]);
+            $stmt_user->close();
+            break;
+        }
+
+        $new_hashed = password_hash($new_password, PASSWORD_BCRYPT);
+        error_log("Nueva contraseña hasheada: $new_hashed");
+
+        $sql_update = "UPDATE usuarios SET clave = ? WHERE id = ?";
+        $stmt_update = $conn->prepare($sql_update);
+        if (!$stmt_update) {
+            error_log("Error preparando update: " . $conn->error);
+            echo json_encode(["success" => false, "message" => "Error en la preparación del update: " . $conn->error]);
+            $stmt_user->close();
+            break;
+        }
+
+        $stmt_update->bind_param("si", $new_hashed, $user['id']);
+        if ($stmt_update->execute()) {
+            error_log("ÉXITO: contraseña actualizada para usuario ID=" . $user['id']);
+            echo json_encode(["success" => true, "message" => "Contraseña actualizada con éxito"]);
+        } else {
+            error_log("Error al actualizar contraseña: " . $stmt_update->error);
+            echo json_encode(["success" => false, "message" => "Error al actualizar la contraseña: " . $stmt_update->error]);
+        }
+
+        $stmt_update->close();
+        $stmt_user->close();
+        error_log("=== FIN CAMBIO PASSWORD ===");
+        break;
+
     case 'contarClasesEstado':
         $sql = "SELECT 
                 SUM(estado = 'Pendiente') AS pendiente,
