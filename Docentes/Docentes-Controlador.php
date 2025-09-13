@@ -4,7 +4,7 @@ include '../Conexion.php';
 $accion = isset($_GET['accion']) ? $_GET['accion'] : 'default';
 
 switch ($accion) {
-    case 'crear':
+case 'crear':
         header('Content-Type: application/json; charset=utf-8');
         ob_clean(); // Limpia cualquier salida previa para evitar errores en JSON
         error_reporting(E_ALL);
@@ -43,7 +43,10 @@ switch ($accion) {
             $declara_renta = isset($_POST['declara_renta']) ? 1 : 0;
             $retenedor_iva = isset($_POST['retenedor_iva']) ? 1 : 0;
             $estado = 1;
-    
+
+            $telefono = isset($_POST['telefono']) && $_POST['telefono'] !== '' ? $_POST['telefono'] : null;
+            $direccion = isset($_POST['direccion']) && $_POST['direccion'] !== '' ? $_POST['direccion'] : null;
+
             $stmt->bind_param(
                 'sssssssiii',
                 $_POST['tipo_documento'],
@@ -51,8 +54,8 @@ switch ($accion) {
                 $_POST['nombres'],
                 $_POST['apellidos'],
                 $_POST['perfil_profesional'],
-                $_POST['telefono'],
-                $_POST['direccion'],
+                $telefono,
+                $direccion,
                 $declara_renta,
                 $retenedor_iva,
                 $estado

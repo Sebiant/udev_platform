@@ -22,21 +22,30 @@ $(document).ready(function () {
     columns: [
       { data: "numero_documento" },
       { data: "nombre_completo" },
-      { data: "perfil_profesional" },
-      { data: "telefono" },
-      { data: "direccion" },
+      {
+        data: "perfil_profesional",
+        render: function (data, type, row) {
+          return data ? data : "No registrado";
+        },
+      },
+      {
+        data: "telefono",
+        render: function (data, type, row) {
+          return data ? data : "No registrado";
+        },
+      },
+      {
+        data: "direccion",
+        render: function (data, type, row) {
+          return data ? data : "No registrado";
+        },
+      },
       { data: "email" },
       { data: "estado" },
       {
         data: null,
         defaultContent:
           '<button class="btn btn-primary w-100 btn-modify">Modificar</button>',
-        orderable: false,
-      },
-      {
-        data: null,
-        defaultContent:
-          '<button class="btn btn-warning w-100 btn-reset-password">Restaurar</button>',
         orderable: false,
       },
       {
@@ -160,38 +169,4 @@ $(document).ready(function () {
       },
     });
   }
-
-  //Funcion para reiniciar la contraseña olvidada por docente
-  $("#datos_docente").on("click", ".btn-reset-password", function () {
-    var data = table.row($(this).parents("tr")).data();
-    var numeroDocumento = data.numero_documento;
-
-    if (
-      confirm(
-        "¿Seguro que quieres restablecer la contraseña de este docente a su número de documento?"
-      )
-    ) {
-      $.ajax({
-        url: "Docentes-Controlador.php?accion=resetPassword",
-        type: "POST",
-        data: { numero_documento: numeroDocumento },
-        success: function (resp) {
-          try {
-            const data = JSON.parse(resp);
-            if (data.success) {
-              alert("✅ " + data.message);
-            } else {
-              alert("⚠️ " + data.message);
-            }
-          } catch (e) {
-            console.error("Respuesta inesperada:", resp);
-            alert("❌ Error inesperado.");
-          }
-        },
-        error: function () {
-          alert("❌ Error al procesar la solicitud.");
-        },
-      });
-    }
-  });
 });
