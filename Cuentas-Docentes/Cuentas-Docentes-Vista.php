@@ -182,8 +182,79 @@
     </div>
 </div>
 
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header">Seguridad</div>
+    <div class="card-body">
+      <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalCambiarPassword">
+        Cambiar contraseña
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalCambiarPassword" tabindex="-1" aria-labelledby="modalPasswordLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cambiar contraseña</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formCambiarPassword">
+          <div class="mb-3">
+            <label for="old_password" class="form-label">Contraseña actual</label>
+            <input type="password" class="form-control" name="old_password" required>
+          </div>
+          <div class="mb-3">
+            <label for="new_password" class="form-label">Nueva contraseña</label>
+            <input type="password" class="form-control" name="new_password" required>
+          </div>
+          <div class="mb-3">
+            <label for="confirm_password" class="form-label">Confirmar nueva contraseña</label>
+            <input type="password" class="form-control" name="confirm_password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <?php include_once '../Componentes/footer.php'; ?>
 <script src="js/Datatable-Cuentas-Docentes.js"></script>
+
+<script>
+  $("#formCambiarPassword").on("submit", function (e) {
+    e.preventDefault();
+
+    $.ajax({
+      url: "Cuentas-Docentes-Controlador.php?accion=cambiarPassword",
+      type: "POST",
+      data: $(this).serialize(),
+      success: function (resp) {
+        try {
+          let data = JSON.parse(resp);
+          console.log("Respuesta del servidor:", data);
+          if (data.success) {
+            alert("✅ " + data.message);
+            $("#modalCambiarPassword").modal("hide");
+            $("#formCambiarPassword")[0].reset();
+          } else {
+            alert("⚠️ " + data.message);
+          }
+        } catch (error) {
+          console.error("Error en la respuesta:", resp);
+          alert("Error inesperado.");
+        }
+      },
+      error: function () {
+        alert("❌ Error al procesar la solicitud.");
+      },
+    });
+  });
+</script>
+
 <script>
     // Función para obtener los datos del servidor
     function cargarClasesEstado() {
