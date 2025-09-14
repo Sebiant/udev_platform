@@ -22,9 +22,24 @@ $(document).ready(function () {
     columns: [
       { data: "numero_documento" },
       { data: "nombre_completo" },
-      { data: "perfil_profesional" },
-      { data: "telefono" },
-      { data: "direccion" },
+      {
+        data: "perfil_profesional",
+        render: function (data, type, row) {
+          return data ? data : "No registrado";
+        },
+      },
+      {
+        data: "telefono",
+        render: function (data, type, row) {
+          return data ? data : "No registrado";
+        },
+      },
+      {
+        data: "direccion",
+        render: function (data, type, row) {
+          return data ? data : "No registrado";
+        },
+      },
       { data: "email" },
       { data: "estado" },
       {
@@ -161,7 +176,7 @@ $(document).ready(function () {
     });
   }
 
-  //Funcion para reiniciar la contraseña olvidada por docente
+  // Función para reiniciar la contraseña olvidada por docente
   $("#datos_docente").on("click", ".btn-reset-password", function () {
     var data = table.row($(this).parents("tr")).data();
     var numeroDocumento = data.numero_documento;
