@@ -50,6 +50,12 @@ $(document).ready(function () {
       },
       {
         data: null,
+        defaultContent:
+          '<button class="btn btn-warning w-100 btn-reset-password">Restaurar</button>',
+        orderable: false,
+      },
+      {
+        data: null,
         render: function (data, type, row) {
           var buttonClass =
             row.estado === "Activo" ? "btn-danger" : "btn-success";
@@ -169,4 +175,38 @@ $(document).ready(function () {
       },
     });
   }
+
+  // Función para reiniciar la contraseña olvidada por docente
+  $("#datos_docente").on("click", ".btn-reset-password", function () {
+    var data = table.row($(this).parents("tr")).data();
+    var numeroDocumento = data.numero_documento;
+
+    if (
+      confirm(
+        "¿Seguro que quieres restablecer la contraseña de este docente a su número de documento?"
+      )
+    ) {
+      $.ajax({
+        url: "Docentes-Controlador.php?accion=resetPassword",
+        type: "POST",
+        data: { numero_documento: numeroDocumento },
+        success: function (resp) {
+          try {
+            const data = JSON.parse(resp);
+            if (data.success) {
+              alert("✅ " + data.message);
+            } else {
+              alert("⚠️ " + data.message);
+            }
+          } catch (e) {
+            console.error("Respuesta inesperada:", resp);
+            alert("❌ Error inesperado.");
+          }
+        },
+        error: function () {
+          alert("❌ Error al procesar la solicitud.");
+        },
+      });
+    }
+  });
 });
